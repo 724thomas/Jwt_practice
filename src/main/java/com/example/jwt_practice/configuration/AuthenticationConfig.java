@@ -23,6 +23,12 @@ public class AuthenticationConfig {
     @Value("${jwt.token.secret}")
     private String secretKey;
 
+//    private final JwtFilter jwtFilter;
+//    private final ExceptionHandlerFilter exceptionHandlerFilter;
+
+
+    private final JwtFilter jwtFilter = new JwtFilter(secretKey);
+    private final ExceptionHandlerFilter exceptionHandlerFilter = new ExceptionHandlerFilter();
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         System.out.println("SecurityFilterChain");
@@ -38,8 +44,8 @@ public class AuthenticationConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, jwtFilter.getClass())
                 .build();
     }
 }
