@@ -1,6 +1,6 @@
 package com.example.jwt_practice.service;
 
-import com.example.jwt_practice.exception.AppException;
+import com.example.jwt_practice.exception.JwtException;
 import com.example.jwt_practice.exception.ErrorCode;
 import com.example.jwt_practice.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class UserService {
 
         //username 중복 체크
         if(userName.equals("유저이름이 이미 존재할때")){
-            throw new AppException(ErrorCode.USERNAME_DUPLICATED, userName + ": 이미 존재하는 회원입니다.");
+            throw new JwtException(ErrorCode.USERNAME_DUPLICATED, userName + ": 이미 존재하는 회원입니다.");
         }
 
         System.out.println("유저 저장");
@@ -31,12 +31,12 @@ public class UserService {
     public String login(String userName, String password){
         //userName 없음
         if(userName.equals("유저가 존재하지 않을때")){
-            throw new AppException(ErrorCode.USERNAME_NOT_FOUND, userName + ": 존재하지 않는 회원입니다.");
+            throw new JwtException(ErrorCode.USERNAME_NOT_FOUND, userName + ": 존재하지 않는 회원입니다.");
         }
 
         //password 틀림
         if (password.equals("비밀번호가 틀렸을때")){
-            throw new AppException(ErrorCode.INVALID_PASSWORD, "비밀번호가 틀렸습니다.");
+            throw new JwtException(ErrorCode.INVALID_PASSWORD, "비밀번호가 틀렸습니다.");
         }
 
         String token = JwtUtil.createToken(userName, key, expiredMs);

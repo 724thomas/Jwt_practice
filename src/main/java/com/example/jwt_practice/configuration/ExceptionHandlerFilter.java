@@ -1,6 +1,6 @@
 package com.example.jwt_practice.configuration;
 
-import com.example.jwt_practice.exception.AppException;
+import com.example.jwt_practice.exception.JwtException;
 import com.example.jwt_practice.exception.ErrorCode;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -12,11 +12,10 @@ import java.io.IOException;
 
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException,
-            IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (AppException e) {
+        } catch (JwtException e) {
             ErrorCode errorCode = e.getErrorCode();
             System.out.println("error response : " + errorCode.name());
             setErrorResponse(response, errorCode);

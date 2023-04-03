@@ -1,16 +1,11 @@
 package com.example.jwt_practice.configuration;
 
-import com.example.jwt_practice.exception.AppException;
+import com.example.jwt_practice.exception.JwtException;
 import com.example.jwt_practice.exception.ErrorCode;
-import com.example.jwt_practice.service.UserService;
 import com.example.jwt_practice.utils.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -31,35 +27,36 @@ public class JwtFilter  extends OncePerRequestFilter {
 
     private final String secretKey;
 
+
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/test") ||
+                request.getRequestURI().startsWith("/userlogin");
+    }
+
+
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("doFilterInternal");
+
+
 
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         log.info("authorization : {}", authorization);
 
 
+
         if(authorization == null || !authorization.startsWith("Bearer")){
             log.error("authorization is null or not Bearer");
-
-            HashMap<String, String> temp = new HashMap<>();
-            temp.put("test", "value");
-
-            ResponseEntity<HashMap<String, String>> responseEntity = ResponseEntity.badRequest().body(temp);
-            response.setStatus(responseEntity.getStatusCodeValue());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE); // set the content type to application/json
-            response.getWriter().write(new ObjectMapper().writeValueAsString(responseEntity.getBody()));
-            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer");
-            throw new AppException(ErrorCode.USERNAME_DUPLICATED, "test");
-
-//            return;
-//
+            throw new JwtException(ErrorCode.INVALID_ACCESS_TOKEN, "authorization is null or not Bearer");
         }
 
         if (authorization.split(" ").length != 2) {
             log.error("Token is not valid");
-            filterChain.doFilter(request, response);
-            return;
+            throw new JwtException(ErrorCode.INVALID_ACCESS_TOKEN, "Token is not valid");
         }
 
         // Token 꺼내기

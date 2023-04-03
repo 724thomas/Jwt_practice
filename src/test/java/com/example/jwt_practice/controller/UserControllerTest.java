@@ -2,11 +2,10 @@ package com.example.jwt_practice.controller;
 
 import com.example.jwt_practice.dto.UserJoinRequest;
 import com.example.jwt_practice.dto.UserLoginRequest;
-import com.example.jwt_practice.exception.AppException;
+import com.example.jwt_practice.exception.JwtException;
 import com.example.jwt_practice.exception.ErrorCode;
 import com.example.jwt_practice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -97,7 +95,7 @@ class UserControllerTest {
         String password = "a1234";
 
         when(userService.login(any(), any()))
-                .thenThrow(new AppException(ErrorCode.USERNAME_NOT_FOUND, ""));
+                .thenThrow(new JwtException(ErrorCode.USERNAME_NOT_FOUND, ""));
 
 
         mockMvc.perform(post("/userlogin")
@@ -116,7 +114,7 @@ class UserControllerTest {
         String password = "a1234";
 
         when(userService.login(any(), any()))
-                .thenThrow(new AppException(ErrorCode.INVALID_PASSWORD, ""));
+                .thenThrow(new JwtException(ErrorCode.INVALID_PASSWORD, ""));
 
 
         mockMvc.perform(post("/userlogin")

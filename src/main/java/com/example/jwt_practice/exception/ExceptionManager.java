@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionManager {
 
-    @ExceptionHandler(AppException.class)
-    public ResponseEntity<?> appExceptionHandler(AppException e){
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<?> jwtExceptionHandler(JwtException e){
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(e.getErrorCode().name() + " " + e.getMessage());
     }
