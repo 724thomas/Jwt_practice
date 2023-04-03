@@ -25,19 +25,21 @@ public class AuthenticationConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        System.out.println("SecurityFilterChain");
         return httpSecurity
                 .httpBasic().disable()
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/join", "/userlogin").permitAll()
-                .antMatchers(HttpMethod.POST, "/**").authenticated()
+                .antMatchers( "/join", "/userlogin").permitAll()
+                .antMatchers(HttpMethod.POST, "/**").authenticated() //모든 POST요청
+//                .anyRequest().authenticated(); //모든 요청
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 }
